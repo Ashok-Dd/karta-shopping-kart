@@ -7,6 +7,8 @@ export async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
+  console.log(token);
+
   const isLoggedIn = !!token;
 
   const isAdminRoute = pathname.startsWith("/dashboard");
@@ -26,6 +28,7 @@ export async function middleware(req: NextRequest) {
   }
 
   if (isProtectedRoute && !isLoggedIn) {
+    
     return NextResponse.redirect(
       new URL(`/login?callbackUrl=${pathname}`, req.url)
     );
