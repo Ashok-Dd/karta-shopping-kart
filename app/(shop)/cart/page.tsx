@@ -20,16 +20,20 @@ export default async function CartPage() {
   });
 
   // 🔥 Serialize Date → string
-  const safeCartItems = cartItems.map((item : any) => ({
-    ...item,
-    createdAt: item.createdAt.toISOString(),
-    updatedAt: item.updatedAt.toISOString(),
-    product: {
-      ...item.product,
-      createdAt: item.product.createdAt.toISOString(),
-      updatedAt: item.product.updatedAt.toISOString(),
-    },
-  }));
+const safeCartItems = cartItems.map((item: any) => ({
+  ...item,
+  createdAt: item?.createdAt
+    ? new Date(item.createdAt).toISOString()
+    : null,
+
+  updatedAt: item?.updatedAt
+    ? new Date(item.updatedAt).toISOString()
+    : null,
+
+  product: {
+    ...item.product,
+  },
+}));
 
   return (
     <div className="min-h-screen pt-20">
