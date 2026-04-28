@@ -24,8 +24,6 @@ export default async function CheckoutPage() {
   // ✅ Serialize Dates → strings
   const safeCartItems = cartItems.map((item) => ({
     ...item,
-    createdAt: item.createdAt.toISOString(),
-    updatedAt: item.updatedAt.toISOString(),
     product: {
       ...item.product,
       createdAt: item.product.createdAt.toISOString(),
