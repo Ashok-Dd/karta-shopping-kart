@@ -42,6 +42,8 @@ export async function generateStaticParams() {
   return products.map((p: any) => ({ slug: p.slug }));
 }
 
+
+
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
@@ -91,6 +93,12 @@ export default async function ProductDetailPage({ params }: PageProps) {
         : undefined,
   };
 
+
+  const safeProduct = {
+  ...product,
+  createdAt: product.createdAt.toISOString(),
+  updatedAt: product.updatedAt.toISOString(),
+};
   return (
     <>
       <script
@@ -250,11 +258,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 )}
               </p>
 
+              
+
               {/* Add to Cart */}
               <AddToCartButton
-                product={
-                  product as Parameters<typeof AddToCartButton>[0]["product"]
-                }
+                product={safeProduct}
               />
 
               {/* Perks */}
