@@ -12,7 +12,9 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await prisma.product.findUnique({ where: { slug } });
   if (!product) return { title: "Product Not Found" };
@@ -24,7 +26,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `Buy ${product.name} Online | Karta`,
       description: product.description.slice(0, 200),
-      images: product.images[0] ? [{ url: product.images[0], alt: product.name }] : [],
+      images: product.images[0]
+        ? [{ url: product.images[0], alt: product.name }]
+        : [],
     },
   };
 }
@@ -35,13 +39,15 @@ export async function generateStaticParams() {
     where: { isPublished: true },
     take: 200,
   });
-  return products.map((p : any) => ({ slug: p.slug }));
+  return products.map((p: unknown) => ({ slug: p.slug }));
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  const product = await prisma.product.findUnique({ where: { slug, isPublished: true } });
+  const product = await prisma.product.findUnique({
+    where: { slug, isPublished: true },
+  });
   if (!product) notFound();
 
   const related = await prisma.product.findMany({
@@ -70,7 +76,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
       price: product.price,
       priceCurrency: "INR",
       availability:
-        product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        product.stock > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
       url: `${process.env.NEXT_PUBLIC_APP_URL}/products/${product.slug}`,
     },
     aggregateRating:
@@ -94,9 +102,19 @@ export default async function ProductDetailPage({ params }: PageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs text-[var(--color-text-subtle)] mb-8">
-            <a href="/" className="hover:text-[var(--color-text)] transition-colors">Home</a>
+            <a
+              href="/"
+              className="hover:text-[var(--color-text)] transition-colors"
+            >
+              Home
+            </a>
             <span>/</span>
-            <a href="/products" className="hover:text-[var(--color-text)] transition-colors">Products</a>
+            <a
+              href="/products"
+              className="hover:text-[var(--color-text)] transition-colors"
+            >
+              Products
+            </a>
             <span>/</span>
             <a
               href={`/products?category=${product.category.toLowerCase()}`}
@@ -105,7 +123,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
               {product.category}
             </a>
             <span>/</span>
-            <span className="text-[var(--color-text-muted)] truncate max-w-[160px]">{product.name}</span>
+            <span className="text-[var(--color-text-muted)] truncate max-w-[160px]">
+              {product.name}
+            </span>
           </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20">
@@ -136,12 +156,17 @@ export default async function ProductDetailPage({ params }: PageProps) {
               {/* Thumbnails */}
               {product.images.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-1">
-                  {product.images.map((img : any, i : number) => (
+                  {product.images.map((img: unknown, i: number) => (
                     <div
                       key={i}
                       className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] cursor-pointer hover:border-[var(--color-accent)] transition-colors"
                     >
-                      <Image src={img} alt={`${product.name} ${i + 1}`} fill className="object-cover" />
+                      <Image
+                        src={img}
+                        alt={`${product.name} ${i + 1}`}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
                   ))}
                 </div>
@@ -153,10 +178,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <Badge variant="default">{product.category}</Badge>
-                  {product.isFeatured && <Badge variant="accent">Featured</Badge>}
-                  {product.stock === 0 && <Badge variant="error">Out of Stock</Badge>}
+                  {product.isFeatured && (
+                    <Badge variant="accent">Featured</Badge>
+                  )}
+                  {product.stock === 0 && (
+                    <Badge variant="error">Out of Stock</Badge>
+                  )}
                 </div>
-                <h1 className="font-display text-3xl sm:text-4xl mb-3">{product.name}</h1>
+                <h1 className="font-display text-3xl sm:text-4xl mb-3">
+                  {product.name}
+                </h1>
 
                 {/* Rating */}
                 {product.reviewCount > 0 && (
@@ -175,7 +206,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                       ))}
                     </div>
                     <span className="text-sm text-[var(--color-text-muted)]">
-                      {product.rating.toFixed(1)} ({product.reviewCount} reviews)
+                      {product.rating.toFixed(1)} ({product.reviewCount}{" "}
+                      reviews)
                     </span>
                   </div>
                 )}
@@ -199,21 +231,31 @@ export default async function ProductDetailPage({ params }: PageProps) {
               </div>
 
               {/* Description */}
-              <p className="text-[var(--color-text-muted)] leading-relaxed">{product.description}</p>
+              <p className="text-[var(--color-text-muted)] leading-relaxed">
+                {product.description}
+              </p>
 
               {/* Stock info */}
               <p className="text-sm text-[var(--color-text-muted)]">
                 {product.stock > 10 ? (
                   <span className="text-[var(--color-success)]">In Stock</span>
                 ) : product.stock > 0 ? (
-                  <span className="text-[var(--color-warning)]">Only {product.stock} left</span>
+                  <span className="text-[var(--color-warning)]">
+                    Only {product.stock} left
+                  </span>
                 ) : (
-                  <span className="text-[var(--color-error)]">Out of Stock</span>
+                  <span className="text-[var(--color-error)]">
+                    Out of Stock
+                  </span>
                 )}
               </p>
 
               {/* Add to Cart */}
-              <AddToCartButton product={product as Parameters<typeof AddToCartButton>[0]["product"]} />
+              <AddToCartButton
+                product={
+                  product as Parameters<typeof AddToCartButton>[0]["product"]
+                }
+              />
 
               {/* Perks */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-[var(--color-border)]">
@@ -222,8 +264,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   { icon: RefreshCw, text: "30-day easy returns" },
                   { icon: Shield, text: "Secure checkout" },
                 ].map(({ icon: Icon, text }) => (
-                  <div key={text} className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-                    <Icon size={13} className="shrink-0 text-[var(--color-accent-2)]" />
+                  <div
+                    key={text}
+                    className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]"
+                  >
+                    <Icon
+                      size={13}
+                      className="shrink-0 text-[var(--color-accent-2)]"
+                    />
                     {text}
                   </div>
                 ))}
@@ -232,8 +280,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
               {/* Tags */}
               {product.tags.length > 0 && (
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-[var(--color-text-subtle)]">Tags:</span>
-                  {product.tags.map((tag : any) => (
+                  <span className="text-xs text-[var(--color-text-subtle)]">
+                    Tags:
+                  </span>
+                  {product.tags.map((tag: unknown) => (
                     <a
                       key={tag}
                       href={`/products?q=${tag}`}
@@ -250,9 +300,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
           {/* Related Products */}
           {related.length > 0 && (
             <section className="mt-24">
-              <h2 className="font-display text-2xl sm:text-3xl mb-8">You May Also Like</h2>
+              <h2 className="font-display text-2xl sm:text-3xl mb-8">
+                You May Also Like
+              </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
-                {related.map((p : any) => (
+                {related.map((p: unknown) => (
                   <ProductCard
                     key={p.id}
                     product={p as Parameters<typeof ProductCard>[0]["product"]}
