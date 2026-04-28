@@ -188,7 +188,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
               <>
                 <Suspense fallback={<ProductGridSkeleton count={20} />}>
                   <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
-                    {products.map((product: unknown, i: number) => (
+                    {products.map((product: any, i: number) => (
                       <ProductCard
                         key={product.id}
                         product={

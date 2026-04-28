@@ -126,7 +126,7 @@ export default async function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {recentOrders.map((order: unknown) => (
+              {recentOrders.map((order: any) => (
                 <tr
                   key={order.id}
                   className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface-2)] transition-colors"

@@ -39,7 +39,7 @@ export async function generateStaticParams() {
     where: { isPublished: true },
     take: 200,
   });
-  return products.map((p: unknown) => ({ slug: p.slug }));
+  return products.map((p: any) => ({ slug: p.slug }));
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
@@ -156,7 +156,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
               {/* Thumbnails */}
               {product.images.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-1">
-                  {product.images.map((img: unknown, i: number) => (
+                  {product.images.map((img: any, i: number) => (
                     <div
                       key={i}
                       className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] cursor-pointer hover:border-[var(--color-accent)] transition-colors"
@@ -283,7 +283,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   <span className="text-xs text-[var(--color-text-subtle)]">
                     Tags:
                   </span>
-                  {product.tags.map((tag: unknown) => (
+                  {product.tags.map((tag: any) => (
                     <a
                       key={tag}
                       href={`/products?q=${tag}`}
@@ -304,7 +304,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 You May Also Like
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
-                {related.map((p: unknown) => (
+                {related.map((p: any) => (
                   <ProductCard
                     key={p.id}
                     product={p as Parameters<typeof ProductCard>[0]["product"]}

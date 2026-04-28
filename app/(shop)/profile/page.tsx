@@ -122,7 +122,7 @@ export default async function ProfilePage() {
               </Link>
             </div>
             <div className="flex flex-col gap-3">
-              {recentOrders.map((order: unknown) => (
+              {recentOrders.map((order: any) => (
                 <Link
                   key={order.id}
                   href={`/orders/${order.id}`}

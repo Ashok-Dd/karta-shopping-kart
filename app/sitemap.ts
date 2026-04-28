@@ -42,21 +42,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const productRoutes: MetadataRoute.Sitemap = products.map((p: unknown) => ({
+  const productRoutes: MetadataRoute.Sitemap = products.map((p: any) => ({
     url: `${base}/products/${p.slug}`,
     lastModified: p.updatedAt,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
 
-  const categoryRoutes: MetadataRoute.Sitemap = categories.map(
-    (c: unknown) => ({
-      url: `${base}/products?category=${c.category.toLowerCase()}`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.7,
-    }),
-  );
+  const categoryRoutes: MetadataRoute.Sitemap = categories.map((c: any) => ({
+    url: `${base}/products?category=${c.category.toLowerCase()}`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.7,
+  }));
 
   return [...staticRoutes, ...productRoutes, ...categoryRoutes];
 }
