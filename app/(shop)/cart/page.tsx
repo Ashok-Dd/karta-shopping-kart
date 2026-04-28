@@ -19,13 +19,26 @@ export default async function CartPage() {
     orderBy: { id: "asc" },
   });
 
+  // 🔥 Serialize Date → string
+  const safeCartItems = cartItems.map((item : any) => ({
+    ...item,
+    createdAt: item.createdAt.toISOString(),
+    updatedAt: item.updatedAt.toISOString(),
+    product: {
+      ...item.product,
+      createdAt: item.product.createdAt.toISOString(),
+      updatedAt: item.product.updatedAt.toISOString(),
+    },
+  }));
+
   return (
     <div className="min-h-screen pt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <h1 className="font-display text-3xl sm:text-4xl mb-8">Your Cart</h1>
-        <CartClient
-          initialItems={cartItems as Parameters<typeof CartClient>[0]["initialItems"]}
-        />
+        <h1 className="font-display text-3xl sm:text-4xl mb-8">
+          Your Cart
+        </h1>
+
+        <CartClient initialItems={safeCartItems} />
       </div>
     </div>
   );
