@@ -3,20 +3,25 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req , secret: process.env.NEXTAUTH_SECRET,});
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET,          // ← was NEXTAUTH_SECRET, must be AUTH_SECRET
+    secureCookie: process.env.NODE_ENV === "production",  // ← required on Vercel (HTTPS)
+    cookieName:
+      process.env.NODE_ENV === "production"
+        ? "__Secure-authjs.session-token"      // ← NextAuth v5 production cookie name
+        : "authjs.session-token",              // ← NextAuth v5 dev cookie name
+  });
 
   const { pathname } = req.nextUrl;
-
-  console.log(token);
-
-  const isLoggedIn = !!token;
+  const isLoggedIn   = !!token;
 
   const isAdminRoute = pathname.startsWith("/dashboard");
 
   const isProtectedRoute =
-    pathname.startsWith("/cart") ||
+    pathname.startsWith("/cart")     ||
     pathname.startsWith("/checkout") ||
-    pathname.startsWith("/orders") ||
+    pathname.startsWith("/orders")   ||
     pathname.startsWith("/profile");
 
   const isAuthRoute =
@@ -28,9 +33,8 @@ export async function middleware(req: NextRequest) {
   }
 
   if (isProtectedRoute && !isLoggedIn) {
-    
     return NextResponse.redirect(
-      new URL(`/login?callbackUrl=${pathname}`, req.url)
+      new URL(`/login?callbackUrl=${encodeURIComponent(pathname)}`, req.url)
     );
   }
 

@@ -6,19 +6,17 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  email:    z.string().email(),
   password: z.string().min(6),
 });
 
-export const {
-  handlers,
-  signIn,
-  signOut,
-  auth,
-} = NextAuth({
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret:    process.env.AUTH_SECRET,   // ← explicitly set
+  trustHost: true,                      // ← required for Vercel deployments
+
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientId:     process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
 
@@ -29,22 +27,13 @@ export const {
           if (!parsed.success) return null;
 
           const { email, password } = parsed.data;
-
-          const user = await prisma.user.findUnique({
-            where: { email },
-          });
-
+          const user = await prisma.user.findUnique({ where: { email } });
           if (!user || !user.password) return null;
 
           const valid = await bcrypt.compare(password, user.password);
           if (!valid) return null;
 
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-          };
+          return { id: user.id, name: user.name, email: user.email, role: user.role };
         } catch (err) {
           console.error("[auth] credentials error:", err);
           return null;
@@ -53,84 +42,58 @@ export const {
     }),
   ],
 
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
 
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
+  pages: { signIn: "/login", error: "/login" },
 
   callbacks: {
-    // 🔐 GOOGLE USER UPSERT (SAFE)
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         if (!user.email) return false;
-
         try {
           const dbUser = await prisma.user.upsert({
-            where: { email: user.email },
-            update: {
-              name: user.name ?? undefined,
-              image: user.image ?? undefined,
-            },
-            create: {
-              email: user.email,
-              name: user.name ?? null,
-              image: user.image ?? null,
-              role: "USER",
-            },
+            where:  { email: user.email },
+            update: { name: user.name ?? undefined, image: user.image ?? undefined },
+            create: { email: user.email, name: user.name ?? null, image: user.image ?? null, role: "USER" },
           });
-
           user.id = dbUser.id;
         } catch (err) {
           console.error("[auth] Google signIn upsert failed:", err);
           return false;
         }
       }
-
       return true;
     },
 
-    // 🧠 JWT SAFE GUARD (THIS FIXES YOUR 500 ERROR)
     async jwt({ token, user }) {
       try {
         if (user) {
-          token.id = user.id;
-          token.role = (user as any).role ?? "USER";
+          token.id   = user.id;
+          token.role = (user as { role?: string }).role ?? "USER";
         }
-
-        // Only fetch from DB if needed
         if (token.id && !token.role) {
           const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
+            where:  { id: token.id as string },
             select: { role: true },
           });
-
           token.role = dbUser?.role ?? "USER";
         }
       } catch (err) {
         console.error("[auth] jwt callback error:", err);
-
-        // fallback so session NEVER breaks
         token.role = "USER";
       }
-
       return token;
     },
 
-    // 📦 SESSION SAFE MAPPING
     async session({ session, token }) {
       try {
         if (session.user) {
-          (session.user as any).id = token.id;
-          (session.user as any).role = token.role ?? "USER";
+          (session.user as { id?: string; role?: string }).id   = token.id as string;
+          (session.user as { id?: string; role?: string }).role = token.role as string ?? "USER";
         }
       } catch (err) {
         console.error("[auth] session callback error:", err);
       }
-
       return session;
     },
   },
