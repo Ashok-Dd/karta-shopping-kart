@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+@layer base {
+  /* ─── DARK THEME (default) ──────────────────────────── */
+  :root {
+    --color-bg: #0a0a0a;
+    --color-surface: #111111;
+    --color-surface-2: #1a1a1a;
+    --color-border: #222222;
+    --color-border-strong: #333333;
+
+    --color-text: #f5f5f5;
+    --color-text-muted: #888888;
+    --color-text-subtle: #555555;
+
+    --color-accent: #f0e6d3;
+    --color-accent-2: #d4a853;
+    --color-accent-dim: rgba(240, 230, 211, 0.12);
+
+    --color-success: #22c55e;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-info: #3b82f6;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 24px rgba(212, 168, 83, 0.1);
+
+    color-scheme: dark;
+  }
+
+  /* ─── LIGHT THEME ────────────────────────────────────── */
+  .light {
+    --color-bg: #fafaf9;
+    --color-surface: #ffffff;
+    --color-surface-2: #f3f0eb;
+    --color-border: #e5e0d8;
+    --color-border-strong: #d0c8bc;
+
+    --color-text: #1a1612;
+    --color-text-muted: #6b6560;
+    --color-text-subtle: #a09890;
+
+    --color-accent: #1a1612;
+    --color-accent-2: #b8873a;
+    --color-accent-dim: rgba(184, 135, 58, 0.12);
+
+    --color-success: #16a34a;
+    --color-warning: #d97706;
+    --color-error: #dc2626;
+    --color-info: #2563eb;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.14);
+    --shadow-glow: 0 0 24px rgba(184, 135, 58, 0.15);
+
+    color-scheme: light;
+  }
+}
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    min-height: 100dvh;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  ::selection {
+    background: var(--color-accent-dim);
+    color: var(--color-accent-2);
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--color-bg); }
+  ::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-text-subtle); }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; height: auto; }
+  input, textarea, select { font-family: var(--font-body); }
+  button { cursor: pointer; font-family: var(--font-body); }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .surface {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .surface-2 {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border-strong);
+  }
+
+  .glow { box-shadow: var(--shadow-glow); }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-surface) 25%,
+      var(--color-surface-2) 50%,
+      var(--color-surface) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .animate-fade-in { animation: fadeIn 0.4s ease forwards; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-slide-down { animation: slideDown 0.3s ease forwards; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent));
+    z-index: 9999;
+    transition: width 0.3s ease;
+  }
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap");
