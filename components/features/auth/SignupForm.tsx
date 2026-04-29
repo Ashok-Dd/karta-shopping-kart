@@ -74,8 +74,8 @@ export function SignupForm() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input label="Full Name" placeholder="Ravi Shankar" leftIcon={<User size={15} />} {...register("name")} error={errors.name?.message} />
-        <Input label="Email" type="email" placeholder="you@example.com" leftIcon={<Mail size={15} />} {...register("email")} error={errors.email?.message} />
+        <Input label="Full Name" placeholder="Your full name" leftIcon={<User size={15} />} {...register("name")} error={errors.name?.message} />
+        <Input label="Email" type="email" placeholder="your-email@gmail.com" leftIcon={<Mail size={15} />} {...register("email")} error={errors.email?.message} />
         <Input
           label="Password" type={showPassword ? "text" : "password"} placeholder="••••••••"
           leftIcon={<Lock size={15} />}
